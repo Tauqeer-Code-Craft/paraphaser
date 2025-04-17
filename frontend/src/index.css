@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* App layout */
+.app-container {
+    display: flex; /* Use flexbox to align sidebar and main content side by side */
+    min-height: 100vh;
+  }
+  
+  Sidebar {
+    width: 250px; /* Set width for sidebar */
+    background-color: #f4f4f4; /* Add background color for sidebar */
+    padding: 20px;
+  }
+  
+  .main-content {
+    flex-grow: 1; /* Take up the remaining space */
+    padding: 20px;
+    background-color: #fff; /* Background color for content area */
+  }
+  
+  /* Optional: Style sidebar items to match the layout */
+  .SidebarItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .SidebarItem:hover {
+    background-color: #ddd;
+  }
+  
+  .SidebarItem.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  
+@layer utilities {
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #e2e8f0; /* Tailwind's gray-200 */
+  }
+
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    height: 100%;
+    width: 150px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmer 1.2s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
