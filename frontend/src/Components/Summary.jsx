@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const Summary = () => {
-  const [videoLink, setVideoLink] = useState('');
+  const [videoLink, setVideoLink] = useState("");
   const [loading, setLoading] = useState(false);
-  const [videoId, setVideoId] = useState('');
-  const [summary, setSummary] = useState('');
-  const [transcript, setTranscript] = useState(''); // New state for transcript
-
-  const handleInputChange = (e) => {
-    setVideoLink(e.target.value);
-  };
+  const [videoId, setVideoId] = useState("");
+  const [summary, setSummary] = useState("");
+  const [transcript, setTranscript] = useState("");
 
   const extractVideoId = (url) => {
-    const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const regex =
+      /(?:https?:\/\/(?:www\.)?youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*\?v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
   };
@@ -23,24 +20,23 @@ const Summary = () => {
     if (videoId) {
       setVideoId(videoId);
       setLoading(true);
-      setSummary('');
-      setTranscript(''); // Reset the transcript
+      setSummary("");
+      setTranscript("");
 
       try {
-        const response = await axios.post('http://localhost:5000/summarize', {
+        const response = await axios.post("http://localhost:5000/summarize", {
           videoId,
         });
 
-        // Assuming backend returns { summary: "...", transcript: "..." }
         setSummary(response.data.summary);
         setTranscript(response.data.transcript); // Set the transcript from the response
       } catch (error) {
-        console.error('Error fetching summary:', error);
+        console.error("Error fetching summary:", error);
       } finally {
         setLoading(false);
       }
     } else {
-      alert('Invalid YouTube link');
+      alert("Invalid YouTube link");
     }
   };
 
@@ -50,32 +46,30 @@ const Summary = () => {
         YouTube Video Summarizer
       </h2>
 
-      {/* Container for input and button, clubbed together */}
-      <div className="flex mb-4">
+      <div className="flex gap-2 mb-4">
         <input
           type="text"
           value={videoLink}
-          onChange={handleInputChange}
-          placeholder="Paste YouTube video link"
-          className="w-full p-2.5 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => setVideoLink(e.target.value)}
+          placeholder="Paste YouTube video link here"
+          className="w-full py-3 px-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={handleSummarizeClick}
-          className="px-5 py-2 bg-indigo-500 text-white rounded-r-md hover:bg-indigo-600 transition-colors"
+          className="px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors font-semibold"
         >
           Summarize
         </button>
       </div>
 
       {loading ? (
-        <div className="flex gap-5 mt-5">
-          <div className="w-[120px] h-[90px] rounded-md skeleton" />
+        <div className="flex gap-3 mt-5">
+          <div className="w-[120px] h-[100px] rounded-md skeleton" />
           <div className="flex-grow h-[100px] rounded-md skeleton" />
         </div>
       ) : (
         summary && (
           <>
-            {/* Thumbnail (displayed at the top, clickable) */}
             <div className="mb-5">
               <a
                 href={`https://www.youtube.com/watch?v=${videoId}`}
@@ -90,19 +84,21 @@ const Summary = () => {
               </a>
             </div>
 
-            {/* Summary Section */}
-            {summary && (
-              <div className="mt-5 bg-gray-50 p-4 rounded-md border border-gray-200 max-h-[300px] overflow-auto">
-                <h3 className="text-md font-semibold text-gray-700 mb-2">Summary</h3>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{summary}</p>
-              </div>
-            )}
+            <div className="mt-5 bg-gray-50 p-4 rounded-md border border-gray-200 max-h-[300px] overflow-auto">
+              <h3 className="text-md font-bold text-gray-700 mb-2">Summary</h3>
+              <p className="text-sm text-gray-600 whitespace-pre-line">
+                {summary}
+              </p>
+            </div>
 
-            {/* Transcript Section */}
             {transcript && (
-              <div className="mt-5 bg-gray-50 p-4 rounded-md border border-gray-200 max-h-[150px] overflow-auto">
-                <h3 className="text-md font-semibold text-gray-700 mb-2">Transcript</h3>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{transcript}</p>
+              <div className="mt-5 bg-gray-50 p-4 rounded-md border border-gray-200 max-h-[300px] overflow-auto">
+                <h3 className="text-md font-bold text-gray-700 mb-2">
+                  Transcript of the video
+                </h3>
+                <p className="text-sm text-gray-600 whitespace-pre-line">
+                  {transcript}
+                </p>
               </div>
             )}
           </>

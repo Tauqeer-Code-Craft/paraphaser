@@ -1,94 +1,117 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
-  Receipt, Settings, FileInput, UserCircle, LayoutDashboard, Brain, History
-} from "lucide-react"
+  Receipt,
+  Settings,
+  Sparkles,
+  UserCircle,
+  Brain,
+  History,
+  Home,
+} from "lucide-react";
 
-import Sidebar, { SidebarItem } from './Components/Sidebar'
-import HistoryComp from './Components/History'
-import MindMap from './Components/MindMap'
-import Summary from './Components/Summary'
+import Sidebar, { SidebarItem } from "./Components/Sidebar";
+import HistoryComponent from "./Components/History";
+import MindMap from "./Components/MindMap";
+import Summary from "./Components/Summary";
+import ReceiptComponent from "./Components/Receipt";
+import UserComponent from "./Components/User";
+import SettingsComponent from "./Components/Settings";
+import axios from "axios";
 
 const App = () => {
-  const [selectedPage, setSelectedPage] = useState('Dashboard') // Track selected page
-
+  const [selectedPage, setSelectedPage] = useState("User");
+  const [username, setUsername] = useState("");
+  const [expanded, setExpanded] = useState(false);
   const renderContent = () => {
     switch (selectedPage) {
-      case 'Dashboard':
-        return <Summary />
-      case 'Summary':
-        return <Summary />
-      case 'Map':
-        return <MindMap />
-      case 'History':
-        return <HistoryComp />
-      case 'Receipt':
-        return <div>Receipt Content</div>;
-      case 'User':
-        return <div>User Content</div>;
-      case 'Settings':
-        return <div>Settings Content</div>;
-      default:
-        return <div>Default Content</div>;
+      case "Summary":
+        return <Summary />;
+      case "Map":
+        return <MindMap />;
+      case "History":
+        return <HistoryComponent />;
+      case "Receipt":
+        return <ReceiptComponent />;
+      case "User":
+        return (
+          <UserComponent
+            setActiveSection={setSelectedPage}
+            username={username}
+          />
+        );
+      case "Settings":
+        return (
+          <SettingsComponent
+            setActiveSection={setSelectedPage}
+            username={username}
+            setUsername={setUsername}
+          />
+        );
     }
-  }
+  };
+
+  useEffect(() => {
+    const getUsername = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/username");
+        setUsername(res.data);
+      } catch (e) {
+        console.log("Cannot get the username");
+      }
+    };
+    getUsername();
+  }, [username]);
 
   return (
-    <main className='App'>
+    <main className="App">
       <div className="app-container">
-        {/* Sidebar */}
-        <Sidebar>
+        <Sidebar username={username} changeExpanded={setExpanded}>
           <SidebarItem
-            icon={<LayoutDashboard size={20} />}
-            text="Dashboard"
-            onClick={() => setSelectedPage('Dashboard')}
-            active={selectedPage === 'Dashboard'}
-          />
-          <SidebarItem
-            icon={<FileInput size={20} />}
+            icon={<Home size={20} />}
             text="Summarizer"
-            onClick={() => setSelectedPage('Summary')}
-            active={selectedPage === 'Summary'}
+            onClick={() => setSelectedPage("Summary")}
+            active={selectedPage === "Summary"}
           />
           <SidebarItem
             icon={<Brain size={20} />}
             text="MindMap"
-            onClick={() => setSelectedPage('Map')}
-            active={selectedPage === 'Map'}
+            onClick={() => setSelectedPage("Map")}
+            active={selectedPage === "Map"}
           />
           <SidebarItem
             icon={<History size={20} />}
             text="History"
-            onClick={() => setSelectedPage('History')}
-            active={selectedPage === 'History'}
+            onClick={() => setSelectedPage("History")}
+            active={selectedPage === "History"}
           />
           <SidebarItem
             icon={<UserCircle size={20} />}
             text="User"
-            onClick={() => setSelectedPage('User')}
-            active={selectedPage === 'User'}
+            onClick={() => setSelectedPage("User")}
+            active={selectedPage === "User"}
           />
           <hr />
           <SidebarItem
             icon={<Receipt size={20} />}
             text="Receipt"
-            onClick={() => setSelectedPage('Receipt')}
-            active={selectedPage === 'Receipt'}
+            onClick={() => setSelectedPage("Receipt")}
+            active={selectedPage === "Receipt"}
+            alert={true}
           />
           <SidebarItem
             icon={<Settings size={20} />}
             text="Settings"
-            onClick={() => setSelectedPage('Settings')}
-            active={selectedPage === 'Settings'}
+            onClick={() => setSelectedPage("Settings")}
+            active={selectedPage === "Settings"}
           />
         </Sidebar>
 
-        {/* Main Content */}
-        <div className="main-content">
-          {renderContent()} {/* Render content based on selected page */}
+        <div className={`main-content ${expanded ? "ml-64" : "ml-16"}`}>
+          {renderContent()}
         </div>
       </div>
     </main>
-  )
-}
+  );
+};
 
 export default App;

@@ -1,26 +1,35 @@
-import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react"
-import { createContext, useContext, useState } from "react"
+import { ChevronFirst, ChevronLast, MoreVertical, User } from "lucide-react";
+import { createContext, useContext, useState } from "react";
 
-const SidebarContext = createContext()
+export const SidebarContext = createContext();
 
-export default function Sidebar({ children }) {
-  const [expanded, setExpanded] = useState(true)
+export default function Sidebar({ children, username, changeExpanded }) {
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <aside className="h-screen">
+    <aside className="h-screen fixed">
       <nav
-        className={`h-full flex flex-col bg-white border-r shadow-sm transition-all duration-300 ${expanded ? "w-64" : "w-16"}`}
+        className={`h-full flex flex-col bg-white border-r shadow-sm transition-all duration-300 ${
+          expanded ? "w-64" : "w-16"
+        }`}
       >
         {/* Header */}
-        <div className="p-4 pb-2 flex justify-between items-center">
+        <div className="px-3 pt-2 pb-4 flex justify-between items-center">
           <img
             src="https://img.logoipsum.com/243.svg"
-            className={`transition-all duration-300 overflow-hidden ${expanded ? "w-32" : "w-0"}`}
+            className={`transition-all duration-300 overflow-hidden ${
+              expanded ? "w-32" : "hidden"
+            }`}
             alt="Logo"
           />
           <button
-            onClick={() => setExpanded((curr) => !curr)}
-            className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
+            onClick={() =>
+              setExpanded((curr) => {
+                changeExpanded(!curr);
+                return !curr;
+              })
+            }
+            className="p-2 rounded-full bg-gray-300 hover:bg-gray-200 transition"
           >
             {expanded ? <ChevronFirst /> : <ChevronLast />}
           </button>
@@ -33,43 +42,52 @@ export default function Sidebar({ children }) {
 
         {/* Footer */}
         <div className="border-t flex p-3 items-center">
-          <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-            alt="Avatar"
-            className="w-10 h-10 rounded-md"
-          />
+          <div className="bg-gray-200 p-2 rounded-full">
+            <User />
+          </div>
           <div
-            className={`transition-all duration-300 overflow-hidden ${expanded ? "ml-3 w-52" : "w-0"}`}
+            className={`transition-all duration-300 overflow-hidden ${
+              expanded ? "ml-3 w-52" : "w-0"
+            }`}
           >
             <div className="leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600">johndoe@gmail.com</span>
+              <h4 className="font-semibold">{username}</h4>
+              <span className="text-xs text-gray-600">
+                kaif.221459.it@mhssce.ac.in
+              </span>
             </div>
           </div>
         </div>
       </nav>
     </aside>
-  )
+  );
 }
 
 export function SidebarItem({ icon, text, active, alert, onClick }) {
-  const { expanded } = useContext(SidebarContext)
-
+  const { expanded } = useContext(SidebarContext);
   return (
     <li
-      onClick={onClick} // Add onClick here
-      className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${active ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800" : "hover:bg-indigo-50 text-gray-600"}`}
+      onClick={onClick}
+      className={`relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group ${
+        active
+          ? "bg-gradient-to-tr from-indigo-400 to-indigo-200 text-indigo-800"
+          : "hover:bg-indigo-100 text-gray-600"
+      }`}
     >
       {icon}
       <span
-        className={`transition-all duration-300 whitespace-nowrap overflow-hidden ${expanded ? "ml-3 w-48" : "w-0"}`}
+        className={`transition-all duration-700 whitespace-nowrap overflow-hidden ${
+          expanded ? "ml-2" : "w-0"
+        }`}
       >
         {text}
       </span>
 
       {alert && (
         <div
-          className={`absolute right-2 w-2 h-2 rounded-full bg-indigo-400 ${expanded ? "" : "top-2"}`}
+          className={`absolute right-2 w-2 h-2 rounded-full bg-indigo-400 ${
+            expanded ? "" : "top-2"
+          }`}
         />
       )}
 
@@ -81,5 +99,5 @@ export function SidebarItem({ icon, text, active, alert, onClick }) {
         </div>
       )}
     </li>
-  )
+  );
 }
