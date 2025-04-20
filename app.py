@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 import uuid
-import re
+import spacy
 from typing import List, Dict
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -76,6 +76,52 @@ def generate_nodes_and_edges(summaries):
     return nodes, edges
 
 
+def generate_quiz_from_summary(summary: str, num_questions=5):
+    import random
+
+    quiz = []
+    sentences = [s.strip() for s in summary.split('.') if len(s.strip()) > 30]
+
+    for s in sentences[:num_questions]:
+        correct_answer = s
+        fake_answers = random.sample(
+            [sent for sent in sentences if sent != correct_answer],
+            k=min(3, len(sentences) - 1)
+        )
+
+        question = f"What does this sentence mean: '{correct_answer[:50]}...'"
+        options = fake_answers + [correct_answer]
+        random.shuffle(options)
+
+        quiz.append({
+            "question": question,
+            "options": options,
+            "answer": correct_answer
+        }) 
+        # quiz.append({
+        #     "question": "Which of the following statements is true?",
+        #     "options": options,
+        #     "answer": correct_answer
+        # })
+
+    return quiz
+
+
+@app.route("/generate_quiz", methods=["POST", "OPTIONS"])
+def generate_quiz():
+    if request.method == "OPTIONS":
+        # Preflight request
+        return jsonify({}), 200
+
+    data = request.json
+    summary = data.get("summary")
+
+    if not summary:
+        return jsonify({"error": "Summary text is required"}), 400
+
+    quiz = generate_quiz_from_summary(summary)
+    return jsonify({"quiz": quiz}), 200
+
 @app.route('/summarize', methods=['POST'])
 def summarize_video():
     data = request.json
@@ -127,6 +173,7 @@ def serialize_history(doc):
         "summary": doc.get("summary", ""),
         "timestamp": doc.get("timestamp").isoformat() if isinstance(doc.get("timestamp"), datetime) else doc.get("timestamp"),
     }
+
 
 
 @app.route("/history", methods=["GET"])

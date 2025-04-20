@@ -7,6 +7,7 @@ import {
   Brain,
   History,
   Home,
+   BookCheck,
 } from "lucide-react";
 
 import Sidebar, { SidebarItem } from "./Components/Sidebar";
@@ -16,6 +17,7 @@ import Summary from "./Components/Summary";
 import ReceiptComponent from "./Components/Receipt";
 import UserComponent from "./Components/User";
 import SettingsComponent from "./Components/Settings";
+import Quiz from "./Components/Quiz";
 import axios from "axios";
 
 const App = () => {
@@ -32,6 +34,8 @@ const App = () => {
         return <HistoryComponent />;
       case "Receipt":
         return <ReceiptComponent />;
+      case "Quiz":
+        return <Quiz/>
       case "User":
         return (
           <UserComponent
@@ -77,6 +81,12 @@ const App = () => {
             text="MindMap"
             onClick={() => setSelectedPage("Map")}
             active={selectedPage === "Map"}
+          />
+          <SidebarItem
+            icon={< BookCheck size={20} />}
+            text="Quiz"
+            onClick={() => setSelectedPage("Quiz")}
+            active={selectedPage === "Quiz"}
           />
           <SidebarItem
             icon={<History size={20} />}
